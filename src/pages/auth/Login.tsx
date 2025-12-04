@@ -17,26 +17,36 @@ import { login } from "@/api/AuthApi"
 
 // token storage
 import { saveToken } from "@/utils/storage";
+import { saveUser } from "@/utils/storage";
 
 export default function Login() {
     const navigate = useNavigate();
 
     const { showLoader, hideLoader } = useLoader();
     const { setUser } = useAuthContext();
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    //username : admin
+    //email : admin
     // password : admin123
     const handleLogin = async () => {
         showLoader();
         try {
 
-            const res = await login(username, password);
-            setUser(res.user);
-            await saveToken(res.token);
+            const res = await login(email, password);
+            setUser(res.data.user);
+            await saveToken(res.data.token);
+            await saveUser(JSON.stringify(res.data.user));
             toast.success("Login successful");
-            navigate("/dashboard");
+            if (res.data.user.role.role_name === "admin") {
+                navigate("/admin-dashboard");
+            }
+            else if (res.data.user.role.role_name === "teacher") {
+                navigate("/teacher-dashboard");
+            }
+            else {
+                navigate("/student-dashboard");
+            }
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Login failed");
         } finally {
@@ -51,21 +61,23 @@ export default function Login() {
                     <CardTitle className="text-2xl text-center">Login</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor="username">Username</Label>
-                            <Input onChange={e => setUsername(e.target.value)} id="username" name="username" type="text" required />
-                        </div>
+                    <form onSubmit={e => { e.preventDefault(); handleLogin(); }}>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-1">
+                                <Label htmlFor="email">Email</Label>
+                                <Input onChange={e => setEmail(e.target.value)} id="email" name="email" type="email" required />
+                            </div>
 
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor="password">Password</Label>
-                            <Input onChange={e => setPassword(e.target.value)} id="password" name="password" type="password" required />
-                        </div>
+                            <div className="flex flex-col gap-1">
+                                <Label htmlFor="password">Password</Label>
+                                <Input onChange={e => setPassword(e.target.value)} id="password" name="password" type="password" required />
+                            </div>
 
-                        <Button onClick={handleLogin} className="hover:cursor-pointer w-full mt-2">
-                            Login
-                        </Button>
-                    </div>
+                            <Button type="submit" className="hover:cursor-pointer w-full mt-2">
+                                Login
+                            </Button>
+                        </div>
+                    </form>
                 </CardContent>
             </Card>
         </div>

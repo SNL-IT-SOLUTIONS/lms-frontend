@@ -2,7 +2,7 @@ import Header from "@/pages/components/Header";
 import ClassCard from "@/pages/components/ClassCard";
 import { useAuthContext } from "@/context/AuthContext";
 import { classes } from "@/mock/MockData";
-export default function StudentDashboard() {
+export default function TeacherDashboard() {
 
     const { user } = useAuthContext();
 

@@ -1,6 +1,5 @@
-import { useAuthContext } from "@/context/AuthContext";
-
+import { getToken } from '@/utils/storage'
 export default function ProtectedRoute({ children }: any) {
-    const { user } = useAuthContext();
-    return user ? children : <div>You must login first.</div>;
+
+    return getToken() ? children : <div>You must login first.</div>;
 }

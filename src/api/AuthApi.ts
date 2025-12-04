@@ -1,7 +1,7 @@
 import axios from '@/api/index';
 
-export const login = async (username: string, password: string) => {
-    const response = await axios.post('/login', { username, password })
+export const login = async (email: string, password: string) => {
+    const response = await axios.post('/login', { email, password })
     return response.data
 }
 
